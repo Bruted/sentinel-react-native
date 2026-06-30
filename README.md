@@ -1,4 +1,4 @@
-# @redeyed/sentinel-react-native
+# @redeyed_/sentinel-react-native
 
 Add the **Redeyed Sentinel** CAPTCHA to your React Native app. The widget is
 rendered inside a [`react-native-webview`](https://github.com/react-native-webview/react-native-webview)
@@ -11,9 +11,9 @@ native code so you can verify it on your server.
 ## Install
 
 ```sh
-npm install @redeyed/sentinel-react-native react-native-webview
+npm install @redeyed_/sentinel-react-native react-native-webview
 # or
-yarn add @redeyed/sentinel-react-native react-native-webview
+yarn add @redeyed_/sentinel-react-native react-native-webview
 ```
 
 `react-native-webview` is a **peer dependency** — install it alongside this
@@ -38,7 +38,7 @@ cd ios && pod install && cd ..
 ```tsx
 import React from 'react';
 import { View } from 'react-native';
-import { SentinelCaptcha } from '@redeyed/sentinel-react-native';
+import { SentinelCaptcha } from '@redeyed_/sentinel-react-native';
 
 export function SignupForm() {
   return (
