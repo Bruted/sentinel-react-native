@@ -1,0 +1,54 @@
+{
+  "name": "@redeyed/sentinel-react-native",
+  "version": "1.0.0",
+  "description": "Add the Redeyed Sentinel CAPTCHA to React Native apps via a WebView-hosted widget.",
+  "license": "MIT",
+  "author": "Redeyed Corporation <dev@redeyed.com>",
+  "homepage": "https://redeyed.com/developers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redeyed/sentinel-react-native.git"
+  },
+  "bugs": {
+    "url": "https://redeyed.com/developers"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "source": "src/index.ts",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-native": ">=0.70",
+    "react-native-webview": ">=13"
+  },
+  "devDependencies": {
+    "@types/react": ">=17",
+    "react": ">=17",
+    "react-native": ">=0.70",
+    "react-native-webview": ">=13",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "redeyed",
+    "sentinel",
+    "captcha",
+    "react-native",
+    "webview",
+    "bot-protection",
+    "human-verification",
+    "react",
+    "security",
+    "spam"
+  ]
+}
