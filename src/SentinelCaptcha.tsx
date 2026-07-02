@@ -56,8 +56,9 @@ export interface SentinelCaptchaProps {
   /**
    * Called with the solved token when the user completes the challenge.
    * Send this token to YOUR server, which verifies it against
-   * `${baseUrl}/api/v1/verify` using your secret API key. The API key must
-   * never live inside the mobile app.
+   * `${baseUrl}/sentinel/siteverify` with JSON body
+   * `{ "secret": "<SECRET KEY>", "response": "<token>" }` (optional
+   * `"remoteip"`). The Secret Key must never live inside the mobile app.
    */
   onVerify: (token: string) => void;
 
