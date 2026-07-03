@@ -25,6 +25,13 @@ export type SentinelWidget =
 export type SentinelTheme = string;
 export type SentinelScheme = 'light' | 'dark' | 'auto';
 
+/**
+ * Challenge difficulty understood by the widget (maps to `data-difficulty`).
+ * Named levels or a numeric 1-6. Only raises difficulty above the adaptive
+ * baseline — a risky visitor is always challenged hard regardless.
+ */
+export type SentinelDifficulty = 'easy' | 'medium' | 'hard' | 'max' | number;
+
 export interface SentinelCaptchaProps {
   /**
    * Public Sentinel site key. Create one for free at
@@ -46,6 +53,11 @@ export interface SentinelCaptchaProps {
    * Colour scheme (maps to `data-scheme`). Optional.
    */
   scheme?: SentinelScheme;
+
+  /**
+   * Challenge difficulty (maps to `data-difficulty`). Optional.
+   */
+  difficulty?: SentinelDifficulty;
 
   /**
    * Origin that hosts `sentinel.js` and the verify API.
@@ -106,6 +118,7 @@ function buildOptionalAttributes(
   widget?: string,
   theme?: string,
   scheme?: string,
+  difficulty?: string | number,
 ): string {
   const parts: string[] = [];
   if (widget) {
@@ -116,6 +129,9 @@ function buildOptionalAttributes(
   }
   if (scheme) {
     parts.push(`data-scheme="${escapeHtmlAttribute(scheme)}"`);
+  }
+  if (difficulty !== undefined && difficulty !== null && difficulty !== '') {
+    parts.push(`data-difficulty="${escapeHtmlAttribute(String(difficulty))}"`);
   }
   return parts.length ? ' ' + parts.join(' ') : '';
 }
@@ -134,12 +150,13 @@ export function buildSentinelHtml(props: {
   widget?: string;
   theme?: string;
   scheme?: string;
+  difficulty?: string | number;
   baseUrl: string;
 }): string {
-  const { siteKey, widget, theme, scheme, baseUrl } = props;
+  const { siteKey, widget, theme, scheme, difficulty, baseUrl } = props;
   const safeSiteKey = escapeHtmlAttribute(siteKey);
   const safeBaseUrl = escapeHtmlAttribute(baseUrl);
-  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme);
+  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, difficulty);
 
   return `<!DOCTYPE html>
 <html>
@@ -264,6 +281,7 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
     widget,
     theme,
     scheme,
+    difficulty,
     baseUrl = DEFAULT_BASE_URL,
     onVerify,
     onError,
@@ -274,8 +292,8 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
   const [height, setHeight] = useState<number>(96);
 
   const html = useMemo(
-    () => buildSentinelHtml({ siteKey, widget, theme, scheme, baseUrl }),
-    [siteKey, widget, theme, scheme, baseUrl],
+    () => buildSentinelHtml({ siteKey, widget, theme, scheme, difficulty, baseUrl }),
+    [siteKey, widget, theme, scheme, difficulty, baseUrl],
   );
 
   const handleMessage = useCallback(

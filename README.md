@@ -66,6 +66,7 @@ export function SignupForm() {
 | `widget`   | `string`                   |    no    | Widget variant (`data-widget`), e.g. `checkbox`, `invisible`, `badge`. |
 | `theme`    | `string`                   |    no    | Widget theme (`data-theme`).                                           |
 | `scheme`   | `'light' \| 'dark' \| 'auto'` |  no    | Colour scheme (`data-scheme`).                                         |
+| `difficulty` | `'easy' \| 'medium' \| 'hard' \| 'max' \| number` | no | Challenge strength (`data-difficulty`).                |
 | `baseUrl`  | `string`                   |    no    | Origin serving the widget/API. Defaults to `https://redeyed.com`.      |
 | `style`    | `StyleProp<ViewStyle>`     |    no    | Style for the WebView. The component auto-sizes height by default.     |
 
