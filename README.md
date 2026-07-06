@@ -65,7 +65,8 @@ export function SignupForm() {
 | `onError`  | `(error: Error) => void`   |    no    | Called on widget/bridge/load errors.                                   |
 | `widget`   | `string`                   |    no    | Widget variant (`data-widget`), e.g. `checkbox`, `invisible`, `badge`. |
 | `theme`    | `string`                   |    no    | Widget theme (`data-theme`).                                           |
-| `scheme`   | `'light' \| 'dark' \| 'auto'` |  no    | Colour scheme (`data-scheme`).                                         |
+| `scheme`   | `SentinelScheme` |  no    | Colour scheme (`data-scheme`): `default`, `ocean`, `forest`, `sunset`, `graphite`, `royalty`, `ruby`, `hacker`, `monochrome`, `midnight`, `aurora`. |
+| `width`    | `string`                   |    no    | Widget width, e.g. `full` / `100%` / `340px` (`data-width`).           |
 | `difficulty` | `'easy' \| 'medium' \| 'hard' \| 'max' \| number` | no | Challenge strength (`data-difficulty`).                |
 | `baseUrl`  | `string`                   |    no    | Origin serving the widget/API. Defaults to `https://redeyed.com`.      |
 | `style`    | `StyleProp<ViewStyle>`     |    no    | Style for the WebView. The component auto-sizes height by default.     |
@@ -123,6 +124,10 @@ app.post('/verify-captcha', async (req, res) => {
    `window.ReactNativeWebView.postMessage`.
 4. The component parses the message and calls `onVerify(token)`. It also reports
    its measured height so the WebView auto-sizes to the widget.
+
+## Changelog
+
+- **1.0.1** — Add `width` prop (`data-width`) and `midnight` / `aurora` schemes.
 
 ## License
 

@@ -20,10 +20,28 @@ export type SentinelWidget =
   | 'slider';
 
 /**
- * Theme/colour scheme attributes understood by the Sentinel widget.
+ * Theme attribute understood by the Sentinel widget (maps to `data-theme`),
+ * e.g. "light" | "dark".
  */
 export type SentinelTheme = string;
-export type SentinelScheme = 'light' | 'dark' | 'auto';
+
+/**
+ * Colour schemes understood by the Sentinel widget (maps to `data-scheme`).
+ * `midnight` and `aurora` are premium/animated schemes — the server enforces
+ * entitlement; the SDK just accepts them as valid values.
+ */
+export type SentinelScheme =
+  | 'default'
+  | 'ocean'
+  | 'forest'
+  | 'sunset'
+  | 'graphite'
+  | 'royalty'
+  | 'ruby'
+  | 'hacker'
+  | 'monochrome'
+  | 'midnight'
+  | 'aurora';
 
 /**
  * Challenge difficulty understood by the widget (maps to `data-difficulty`).
@@ -53,6 +71,12 @@ export interface SentinelCaptchaProps {
    * Colour scheme (maps to `data-scheme`). Optional.
    */
   scheme?: SentinelScheme;
+
+  /**
+   * Widget width, e.g. "full" | "100%" | "340px" (maps to `data-width`).
+   * Optional.
+   */
+  width?: string;
 
   /**
    * Challenge difficulty (maps to `data-difficulty`). Optional.
@@ -118,6 +142,7 @@ function buildOptionalAttributes(
   widget?: string,
   theme?: string,
   scheme?: string,
+  width?: string,
   difficulty?: string | number,
 ): string {
   const parts: string[] = [];
@@ -129,6 +154,9 @@ function buildOptionalAttributes(
   }
   if (scheme) {
     parts.push(`data-scheme="${escapeHtmlAttribute(scheme)}"`);
+  }
+  if (width) {
+    parts.push(`data-width="${escapeHtmlAttribute(width)}"`);
   }
   if (difficulty !== undefined && difficulty !== null && difficulty !== '') {
     parts.push(`data-difficulty="${escapeHtmlAttribute(String(difficulty))}"`);
@@ -150,13 +178,14 @@ export function buildSentinelHtml(props: {
   widget?: string;
   theme?: string;
   scheme?: string;
+  width?: string;
   difficulty?: string | number;
   baseUrl: string;
 }): string {
-  const { siteKey, widget, theme, scheme, difficulty, baseUrl } = props;
+  const { siteKey, widget, theme, scheme, width, difficulty, baseUrl } = props;
   const safeSiteKey = escapeHtmlAttribute(siteKey);
   const safeBaseUrl = escapeHtmlAttribute(baseUrl);
-  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, difficulty);
+  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, width, difficulty);
 
   return `<!DOCTYPE html>
 <html>
@@ -281,6 +310,7 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
     widget,
     theme,
     scheme,
+    width,
     difficulty,
     baseUrl = DEFAULT_BASE_URL,
     onVerify,
@@ -292,8 +322,8 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
   const [height, setHeight] = useState<number>(96);
 
   const html = useMemo(
-    () => buildSentinelHtml({ siteKey, widget, theme, scheme, difficulty, baseUrl }),
-    [siteKey, widget, theme, scheme, difficulty, baseUrl],
+    () => buildSentinelHtml({ siteKey, widget, theme, scheme, width, difficulty, baseUrl }),
+    [siteKey, widget, theme, scheme, width, difficulty, baseUrl],
   );
 
   const handleMessage = useCallback(

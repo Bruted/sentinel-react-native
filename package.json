@@ -1,6 +1,6 @@
 {
   "name": "@redeyed_/sentinel-react-native",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Add the Redeyed Sentinel CAPTCHA to React Native apps via a WebView-hosted widget.",
   "license": "MIT",
   "author": "Redeyed Corporation <dev@redeyed.com>",
