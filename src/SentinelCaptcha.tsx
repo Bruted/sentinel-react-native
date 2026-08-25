@@ -8,22 +8,52 @@ import { WebView, WebViewMessageEvent } from 'react-native-webview';
 const DEFAULT_BASE_URL = 'https://redeyed.com';
 
 /**
- * Visual variants supported by the Sentinel widget. These map directly to the
+ * Challenge types supported by the Sentinel widget. These map directly to the
  * `data-widget` attribute on the embedded `<div>`.
+ *
+ * `adaptive` (recommended) is resolved server-side and escalates from a
+ * low-friction proof to a procedural reasoning challenge based on risk; `all`
+ * picks any supported type at random per challenge. The rest name a concrete
+ * challenge. An unrecognised value falls back to the site default.
+ *
+ * The trailing `(string & {})` keeps this list as editor autocomplete without
+ * rejecting a newly shipped type before this package is republished.
  */
 export type SentinelWidget =
-  | 'checkbox'
-  | 'invisible'
-  | 'badge'
-  | 'inline'
-  | 'compact'
-  | 'slider';
+  | 'adaptive'
+  | 'all'
+  | 'behavioral'
+  | 'pow'
+  | 'text_math'
+  | 'image_puzzle'
+  | 'rotate_align'
+  | 'press_hold'
+  | 'image_pick'
+  | 'relational_scene'
+  | 'motion_track'
+  | 'light_shadow'
+  | 'shape_match'
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | (string & {});
 
 /**
- * Theme/colour scheme attributes understood by the Sentinel widget.
+ * Colour theme (`data-theme`). `auto` follows the device's colour scheme.
  */
-export type SentinelTheme = string;
-export type SentinelScheme = 'light' | 'dark' | 'auto';
+export type SentinelTheme = 'auto' | 'light' | 'dark';
+
+/**
+ * Named colour scheme (`data-scheme`), e.g. `default`, `ocean`, `forest`,
+ * `sunset`, `graphite`, `royalty`, `ruby`, `hacker`, `cyber`, `monochrome`, or
+ * the animated `midnight`, `ember`, `aurora` on paid plans.
+ */
+export type SentinelScheme = string;
+
+/**
+ * Challenge difficulty understood by the widget (maps to `data-difficulty`).
+ * Named levels or a numeric 1-6. Only raises difficulty above the adaptive
+ * baseline — a risky visitor is always challenged hard regardless.
+ */
+export type SentinelDifficulty = 'easy' | 'medium' | 'hard' | 'max' | number;
 
 export interface SentinelCaptchaProps {
   /**
@@ -48,6 +78,11 @@ export interface SentinelCaptchaProps {
   scheme?: SentinelScheme;
 
   /**
+   * Challenge difficulty (maps to `data-difficulty`). Optional.
+   */
+  difficulty?: SentinelDifficulty;
+
+  /**
    * Origin that hosts `sentinel.js` and the verify API.
    * Defaults to https://redeyed.com.
    */
@@ -56,8 +91,9 @@ export interface SentinelCaptchaProps {
   /**
    * Called with the solved token when the user completes the challenge.
    * Send this token to YOUR server, which verifies it against
-   * `${baseUrl}/api/v1/verify` using your secret API key. The API key must
-   * never live inside the mobile app.
+   * `${baseUrl}/sentinel/siteverify` with JSON body
+   * `{ "secret": "<SECRET KEY>", "response": "<token>" }` (optional
+   * `"remoteip"`). The Secret Key must never live inside the mobile app.
    */
   onVerify: (token: string) => void;
 
@@ -105,6 +141,7 @@ function buildOptionalAttributes(
   widget?: string,
   theme?: string,
   scheme?: string,
+  difficulty?: string | number,
 ): string {
   const parts: string[] = [];
   if (widget) {
@@ -115,6 +152,9 @@ function buildOptionalAttributes(
   }
   if (scheme) {
     parts.push(`data-scheme="${escapeHtmlAttribute(scheme)}"`);
+  }
+  if (difficulty !== undefined && difficulty !== null && difficulty !== '') {
+    parts.push(`data-difficulty="${escapeHtmlAttribute(String(difficulty))}"`);
   }
   return parts.length ? ' ' + parts.join(' ') : '';
 }
@@ -133,12 +173,13 @@ export function buildSentinelHtml(props: {
   widget?: string;
   theme?: string;
   scheme?: string;
+  difficulty?: string | number;
   baseUrl: string;
 }): string {
-  const { siteKey, widget, theme, scheme, baseUrl } = props;
+  const { siteKey, widget, theme, scheme, difficulty, baseUrl } = props;
   const safeSiteKey = escapeHtmlAttribute(siteKey);
   const safeBaseUrl = escapeHtmlAttribute(baseUrl);
-  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme);
+  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, difficulty);
 
   return `<!DOCTYPE html>
 <html>
@@ -263,6 +304,7 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
     widget,
     theme,
     scheme,
+    difficulty,
     baseUrl = DEFAULT_BASE_URL,
     onVerify,
     onError,
@@ -273,8 +315,8 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
   const [height, setHeight] = useState<number>(96);
 
   const html = useMemo(
-    () => buildSentinelHtml({ siteKey, widget, theme, scheme, baseUrl }),
-    [siteKey, widget, theme, scheme, baseUrl],
+    () => buildSentinelHtml({ siteKey, widget, theme, scheme, difficulty, baseUrl }),
+    [siteKey, widget, theme, scheme, difficulty, baseUrl],
   );
 
   const handleMessage = useCallback(

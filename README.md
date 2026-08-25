@@ -5,7 +5,7 @@ rendered inside a [`react-native-webview`](https://github.com/react-native-webvi
 WebView (React Native has no DOM), and the solved token is bridged back to your
 native code so you can verify it on your server.
 
-> Sentinel is **free**, but you need site/API keys. Create them at
+> Sentinel is **free**, but you need a Site Key and Secret Key. Create them at
 > **https://redeyed.com/developers**.
 
 ## Install
@@ -63,9 +63,10 @@ export function SignupForm() {
 | `siteKey`  | `string`                   |   yes    | Your public Sentinel site key.                                         |
 | `onVerify` | `(token: string) => void`  |   yes    | Called with the solved token. Send it to your server to verify.        |
 | `onError`  | `(error: Error) => void`   |    no    | Called on widget/bridge/load errors.                                   |
-| `widget`   | `string`                   |    no    | Widget variant (`data-widget`), e.g. `checkbox`, `invisible`, `badge`. |
-| `theme`    | `string`                   |    no    | Widget theme (`data-theme`).                                           |
-| `scheme`   | `'light' \| 'dark' \| 'auto'` |  no    | Colour scheme (`data-scheme`).                                         |
+| `widget`   | `SentinelWidget`           |    no    | Challenge type (`data-widget`): `adaptive` (recommended), `all` (random), or `behavioral`, `pow`, `press_hold`, `text_math`, `image_puzzle`, `rotate_align`, `image_pick`, `relational_scene`, `motion_track`, `light_shadow`, `shape_match`. |
+| `theme`    | `'auto' \| 'light' \| 'dark'` |  no    | Colour theme (`data-theme`). `auto` follows the device.                |
+| `scheme`   | `string`                   |    no    | Named colour scheme (`data-scheme`), e.g. `ocean`, `hacker`, `monochrome`. |
+| `difficulty` | `'easy' \| 'medium' \| 'hard' \| 'max' \| number` | no | Challenge strength (`data-difficulty`).                |
 | `baseUrl`  | `string`                   |    no    | Origin serving the widget/API. Defaults to `https://redeyed.com`.      |
 | `style`    | `StyleProp<ViewStyle>`     |    no    | Style for the WebView. The component auto-sizes height by default.     |
 
@@ -73,38 +74,40 @@ export function SignupForm() {
 
 The token returned to `onVerify` proves only that the challenge was completed in
 the app. You **must** verify it on your own server before trusting it. Your
-secret API key stays on the server and is **never** shipped inside the app.
+Secret Key stays on the server and is **never** shipped inside the app.
 
 ```http
-POST https://redeyed.com/api/v1/verify
-X-Api-Key: YOUR_SECRET_API_KEY
+POST https://redeyed.com/sentinel/siteverify
 Content-Type: application/json
 
 {
-  "site_key": "YOUR_PUBLIC_SITE_KEY",
-  "token": "TOKEN_FROM_THE_APP"
+  "secret": "YOUR_SECRET_KEY",
+  "response": "TOKEN_FROM_THE_APP"
 }
 ```
 
-Treat the verification as successful when the response has
-`data.success === true` (or top-level `success === true`).
+You may also include an optional `"remoteip"` field with the end user's IP.
+Treat the verification as successful when the response has `success === true`;
+the response also carries `outcome` and `score`. Both keys come from the
+**Redeyed Lab → Sentinel → Sites**; the Secret Key is shown once and stays
+server-side.
 
 ```js
 // Example Node.js server handler
 app.post('/verify-captcha', async (req, res) => {
-  const r = await fetch('https://redeyed.com/api/v1/verify', {
+  const r = await fetch('https://redeyed.com/sentinel/siteverify', {
     method: 'POST',
     headers: {
-      'X-Api-Key': process.env.SENTINEL_API_KEY, // secret, server-only
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      site_key: process.env.SENTINEL_SITE_KEY,
-      token: req.body.token,
+      secret: process.env.SENTINEL_SECRET_KEY, // secret, server-only
+      response: req.body.token,
+      remoteip: req.ip, // optional
     }),
   });
   const body = await r.json();
-  const ok = body?.data?.success === true || body?.success === true;
+  const ok = body?.success === true;
   res.json({ verified: ok });
 });
 ```
