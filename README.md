@@ -66,6 +66,7 @@ export function SignupForm() {
 | `widget`   | `SentinelWidget`           |    no    | Challenge type (`data-widget`): `adaptive` (recommended), `all` (random), or `behavioral`, `pow`, `press_hold`, `text_math`, `image_puzzle`, `rotate_align`, `image_pick`, `relational_scene`, `motion_track`, `light_shadow`, `shape_match`, `count_match`. |
 | `theme`    | `'auto' \| 'light' \| 'dark'` |  no    | Colour theme (`data-theme`). `auto` follows the device.                |
 | `scheme`   | `string`                   |    no    | Named colour scheme (`data-scheme`), e.g. `ocean`, `hacker`, `monochrome`. |
+| `width`    | `string`                   |    no    | Widget width, e.g. `full` / `100%` / `340px` (`data-width`).           |
 | `difficulty` | `'easy' \| 'medium' \| 'hard' \| 'max' \| number` | no | Challenge strength (`data-difficulty`).                |
 | `baseUrl`  | `string`                   |    no    | Origin serving the widget/API. Defaults to `https://redeyed.com`.      |
 | `style`    | `StyleProp<ViewStyle>`     |    no    | Style for the WebView. The component auto-sizes height by default.     |
@@ -123,6 +124,10 @@ app.post('/verify-captcha', async (req, res) => {
    `window.ReactNativeWebView.postMessage`.
 4. The component parses the message and calls `onVerify(token)`. It also reports
    its measured height so the WebView auto-sizes to the widget.
+
+## Changelog
+
+- **1.0.1** — Add `width` prop (`data-width`) and `midnight` / `aurora` schemes.
 
 ## License
 
