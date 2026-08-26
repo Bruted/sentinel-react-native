@@ -33,6 +33,7 @@ export type SentinelWidget =
   | 'motion_track'
   | 'light_shadow'
   | 'shape_match'
+  | 'count_match'
   // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {});
 

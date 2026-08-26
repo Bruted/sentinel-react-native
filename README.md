@@ -63,7 +63,7 @@ export function SignupForm() {
 | `siteKey`  | `string`                   |   yes    | Your public Sentinel site key.                                         |
 | `onVerify` | `(token: string) => void`  |   yes    | Called with the solved token. Send it to your server to verify.        |
 | `onError`  | `(error: Error) => void`   |    no    | Called on widget/bridge/load errors.                                   |
-| `widget`   | `SentinelWidget`           |    no    | Challenge type (`data-widget`): `adaptive` (recommended), `all` (random), or `behavioral`, `pow`, `press_hold`, `text_math`, `image_puzzle`, `rotate_align`, `image_pick`, `relational_scene`, `motion_track`, `light_shadow`, `shape_match`. |
+| `widget`   | `SentinelWidget`           |    no    | Challenge type (`data-widget`): `adaptive` (recommended), `all` (random), or `behavioral`, `pow`, `press_hold`, `text_math`, `image_puzzle`, `rotate_align`, `image_pick`, `relational_scene`, `motion_track`, `light_shadow`, `shape_match`, `count_match`. |
 | `theme`    | `'auto' \| 'light' \| 'dark'` |  no    | Colour theme (`data-theme`). `auto` follows the device.                |
 | `scheme`   | `string`                   |    no    | Named colour scheme (`data-scheme`), e.g. `ocean`, `hacker`, `monochrome`. |
 | `difficulty` | `'easy' \| 'medium' \| 'hard' \| 'max' \| number` | no | Challenge strength (`data-difficulty`).                |
