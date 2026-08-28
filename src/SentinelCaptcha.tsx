@@ -95,6 +95,13 @@ export interface SentinelCaptchaProps {
   difficulty?: SentinelDifficulty;
 
   /**
+   * Number of verification steps, 1-7 (maps to `data-widget-steps`). Paid
+   * plans only, and a floor rather than a ceiling: it can raise the count
+   * above the adaptive baseline, never lower it.
+   */
+  widgetSteps?: number;
+
+  /**
    * Origin that hosts `sentinel.js` and the verify API.
    * Defaults to https://redeyed.com.
    */
@@ -155,6 +162,7 @@ function buildOptionalAttributes(
   scheme?: string,
   width?: string,
   difficulty?: string | number,
+  widgetSteps?: number,
 ): string {
   const parts: string[] = [];
   if (widget) {
@@ -171,6 +179,9 @@ function buildOptionalAttributes(
   }
   if (difficulty !== undefined && difficulty !== null && difficulty !== '') {
     parts.push(`data-difficulty="${escapeHtmlAttribute(String(difficulty))}"`);
+  }
+  if (widgetSteps !== undefined && widgetSteps !== null) {
+    parts.push(`data-widget-steps="${escapeHtmlAttribute(String(widgetSteps))}"`);
   }
   return parts.length ? ' ' + parts.join(' ') : '';
 }
@@ -191,12 +202,13 @@ export function buildSentinelHtml(props: {
   scheme?: string;
   width?: string;
   difficulty?: string | number;
+  widgetSteps?: number;
   baseUrl: string;
 }): string {
-  const { siteKey, widget, theme, scheme, width, difficulty, baseUrl } = props;
+  const { siteKey, widget, theme, scheme, width, difficulty, widgetSteps, baseUrl } = props;
   const safeSiteKey = escapeHtmlAttribute(siteKey);
   const safeBaseUrl = escapeHtmlAttribute(baseUrl);
-  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, width, difficulty);
+  const optionalAttrs = buildOptionalAttributes(widget, theme, scheme, width, difficulty, widgetSteps);
 
   return `<!DOCTYPE html>
 <html>
@@ -323,6 +335,7 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
     scheme,
     width,
     difficulty,
+    widgetSteps,
     baseUrl = DEFAULT_BASE_URL,
     onVerify,
     onError,
@@ -334,7 +347,7 @@ export function SentinelCaptcha(props: SentinelCaptchaProps): React.ReactElement
 
   const html = useMemo(
     () => buildSentinelHtml({ siteKey, widget, theme, scheme, width, difficulty, baseUrl }),
-    [siteKey, widget, theme, scheme, width, difficulty, baseUrl],
+    [siteKey, widget, theme, scheme, width, difficulty, widgetSteps, baseUrl],
   );
 
   const handleMessage = useCallback(
